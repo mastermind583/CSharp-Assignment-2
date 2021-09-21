@@ -67,14 +67,20 @@ namespace TaskManager
             Console.WriteLine("\nThank you for using the Task Manager!\n");
         }
 
-        public static void AddTask(List<Task> taskList)
+        public static void AddOrEditTask(List<Task> taskList, Task task = null)
         {
-            var newTask = new Task();
+            bool isNewTask = false;
+            if (task == null)
+            {
+                task = new Task();
+                isNewTask = true;
+            }
+
             Console.WriteLine("\nEnter the name of the task: ");
-            newTask.Name = Console.ReadLine();
+            task.Name = Console.ReadLine();
 
             Console.WriteLine("\nEnter the description of the task: ");
-            newTask.Description = Console.ReadLine();
+            task.Description = Console.ReadLine();
 
             bool cont;
             do
@@ -82,7 +88,7 @@ namespace TaskManager
                 Console.WriteLine("\nEnter the deadline for the task: ");
                 if (DateTime.TryParse(Console.ReadLine(), out DateTime date))
                 {
-                    newTask.Deadline = date;
+                    task.Deadline = date;
                     cont = false;
                 }
                 else
@@ -92,9 +98,28 @@ namespace TaskManager
                 }
             }
             while (cont);
+            /*
+            if (ticket is SupportTicket)
+            {
+                Console.WriteLine("What is the deadline?");
+                if (DateTime.TryParse(Console.ReadLine(), out DateTime deadline))
+                {
+                    (ticket as SupportTicket).Deadline = deadline;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid choice, defaulting to today");
+                    (ticket as SupportTicket).Deadline = DateTime.Today;
+                }
+            }
+            
+            ticket.DateAdded = DateTime.Now;*/
 
-            taskList.Add(newTask);
-            Console.WriteLine("\nNEW TASK: \"" + newTask.Name + "\" has been added to the list.");
+            if (isNewTask)
+            {
+                taskList.Add(task);
+                Console.WriteLine("\nNEW TASK: \"" + newTask.Name + "\" has been added to the list.");
+            }
         }
 
         public static void DeleteTask(List<Task> taskList)
