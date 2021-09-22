@@ -10,9 +10,11 @@ namespace TaskManager
         static void Main(string[] args)
         {
             var taskList = new List<Task>();
-            bool cont = true;
+            var taskNavigator = new ListNavigator<Task>(taskList, 5);
 
             Console.WriteLine("Welcome to the Task Manager!");
+
+            bool cont = true;
             while (cont)
             {
                 Console.WriteLine("\nPlease choose an option: ");
@@ -34,12 +36,12 @@ namespace TaskManager
                             break;
                         case 2:
                             //delete task
-                            DeleteTask(taskList);
+                            DeleteTask(taskList, taskNavigator);
                             break;
                         case 3:
                             //edit task
                             Console.WriteLine("\nWhich task would you like to edit?");
-                            ListAll(taskList);
+                            PrintTaskList(taskNavigator);
                             Console.WriteLine();
 
                             //only edit task if the task exists
@@ -56,7 +58,7 @@ namespace TaskManager
                             break;
                         case 4:
                             //complete task
-                            CompleteTask(taskList);
+                            CompleteTask(taskList, taskNavigator);
                             break;
                         case 5:
                             //list incomplete tasks
@@ -64,7 +66,7 @@ namespace TaskManager
                             break;
                         case 6:
                             //list all tasks
-                            ListAll(taskList);
+                            PrintTaskList(taskNavigator);
                             break;
                         case 7:
                             //exit
@@ -130,7 +132,7 @@ namespace TaskManager
                 Console.WriteLine("\nTASK UPDATED: \"" + task.Name + "\".");
         }
 
-        public static void DeleteTask(List<Task> taskList)
+        public static void DeleteTask(List<Task> taskList, ListNavigator<Task> taskNavigator)
         {
             if (taskList.FirstOrDefault() == null)
             {
@@ -139,7 +141,7 @@ namespace TaskManager
             }
 
             Console.WriteLine("\nWhich task would you like to delete?");
-            ListAll(taskList);
+            PrintTaskList(taskNavigator);
             Console.WriteLine();
 
             if (int.TryParse(Console.ReadLine(), out int deleteChoice))
@@ -154,7 +156,7 @@ namespace TaskManager
                 Console.WriteLine("\nInvalid Task ID");
         }
 
-        public static void CompleteTask(List<Task> taskList)
+        public static void CompleteTask(List<Task> taskList, ListNavigator<Task> taskNavigator)
         {
             if (taskList.FirstOrDefault() == null)
             {
@@ -163,7 +165,7 @@ namespace TaskManager
             }
 
             Console.WriteLine("\nWhich task would you like to complete?");
-            ListAll(taskList);
+            PrintTaskList(taskNavigator);
             Console.WriteLine();
 
             if (int.TryParse(Console.ReadLine(), out int completeChoice))
@@ -210,6 +212,33 @@ namespace TaskManager
             Console.WriteLine();
             foreach (var task in taskList)
                 Console.WriteLine(task.ToString());
+        }
+
+        public static void PrintTaskList(ListNavigator<Task> taskNavigator)
+        {
+            bool isNavigating = true;
+            while (isNavigating)
+            {
+                var page = taskNavigator.GetCurrentPage();
+                foreach (var item in page)
+                    Console.WriteLine($"{item.Value}");
+
+                if (taskNavigator.HasPreviousPage)
+                    Console.WriteLine("P. Previous");
+
+                if (taskNavigator.HasNextPage)
+                    Console.WriteLine("N. Next");
+
+                var selection = Console.ReadLine();
+                if (selection.Equals("P", StringComparison.InvariantCultureIgnoreCase))
+                    taskNavigator.GoBackward();
+                else if (selection.Equals("N", StringComparison.InvariantCultureIgnoreCase))
+                    taskNavigator.GoForward();
+                else
+                    isNavigating = false;
+            }
+
+            Console.WriteLine();
         }
     }
 }
