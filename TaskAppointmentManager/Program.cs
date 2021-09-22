@@ -13,7 +13,11 @@ namespace TaskManager
         static void Main(string[] args)
         {
             var itemList = new List<Item>();
-            var itemNavigator = new ListNavigator<Item>(itemList, 2);       
+            var itemNavigator = new ListNavigator<Item>(itemList, 2);
+
+            var taskList = new List<Task>();
+            var taskNavigator = new ListNavigator<Task>(taskList, 2);
+
             Console.WriteLine("Welcome to the Task Manager!");
 
             bool cont = true;
@@ -68,7 +72,7 @@ namespace TaskManager
                             {
                                 Console.WriteLine("\nEDITING A TASK");
                                 Console.WriteLine("--------------");
-                                PrintTaskList(itemNavigator, false);
+                                PrintItemList(itemNavigator);
                                 Console.WriteLine("\nWhich item would you like to edit?");
 
                                 //only edit a task if the task exists
@@ -91,7 +95,20 @@ namespace TaskManager
                             break;
                         case 4:
                             //complete task
-                            CompleteTask(itemList, itemNavigator);
+                            if (itemList.FirstOrDefault() == null)
+                            {
+                                Console.WriteLine("\nThere are no tasks to complete.");
+                                return;
+                            }
+
+                            Console.WriteLine("\nCOMPLETING A TASK");
+                            Console.WriteLine("-----------------");
+
+                            PrintIncompleteTasks(taskNavigator);
+
+                            Console.WriteLine("\nWhich task would you like to complete?");
+
+                            CompleteTask(itemList, taskList);
                             break;
                         case 5:
                             //list incomplete tasks
@@ -99,7 +116,7 @@ namespace TaskManager
                             if (itemList.FirstOrDefault() == null)
                                 Console.WriteLine("\nThere are no outstanding tasks in the list.");
                             else
-                                PrintTaskList(itemNavigator, true);
+                                PrintIncompleteTasks(taskNavigator);
                             break;
                         case 6:
                             //list all tasks
@@ -107,7 +124,7 @@ namespace TaskManager
                             if (itemList.FirstOrDefault() == null)
                                 Console.WriteLine("\nThere are no tasks in the list.");
                             else
-                                PrintTaskList(itemNavigator, false);
+                                PrintItemList(itemNavigator);
                             break;
                         case 7:
                             //exit
@@ -199,7 +216,7 @@ namespace TaskManager
 
             Console.WriteLine("\nDELETING AN ITEM");
             Console.WriteLine("----------------");
-            PrintTaskList(itemNavigator, false);
+            PrintItemList(itemNavigator);
             Console.WriteLine("\nWhich task would you like to delete?");
 
             if (int.TryParse(Console.ReadLine(), out int deleteChoice))
@@ -214,27 +231,19 @@ namespace TaskManager
                 Console.WriteLine("\nInvalid Task ID");
         }
 
-        public static void CompleteTask(List<Item> itemList, ListNavigator<Item> itemNavigator)
+        public static void CompleteTask(List<Item> itemList, List<Task> taskList)
         {
-            if (itemList.FirstOrDefault() == null)
-            {
-                Console.WriteLine("\nThere are no tasks to complete.");
-                return;
-            }
-
-            Console.WriteLine("\nCOMPLETING A TASK");
-            Console.WriteLine("-----------------");
-            PrintTaskList(itemNavigator, true);
-            Console.WriteLine("\nWhich task would you like to complete?");
-
             if (int.TryParse(Console.ReadLine(), out int completeChoice))
             {
                 var taskToComplete = itemList.FirstOrDefault(t => t.Id == completeChoice);
-                if (itemList.Contains(taskToComplete) && taskToComplete.IsCompleted == false)
+                if (itemList.Contains(taskToComplete) && taskToComplete is Task && (taskToComplete as Task).IsCompleted == false)
                 {
-                    taskToComplete.IsCompleted = true;
+                    (taskToComplete as Task).IsCompleted = true;
+                    taskList.Remove(taskToComplete as Task);
                     Console.WriteLine("\nTASK COMPLETED: \"" + taskToComplete.Name + "\" has now been completed.");
                 }
+                else if (itemList.Contains(taskToComplete) && taskToComplete is not Task)
+                    Console.WriteLine("\n\"" + taskToComplete.Name + "\" is not a task.");
                 else if (itemList.Contains(taskToComplete))
                     Console.WriteLine("\n\"" + taskToComplete.Name + "\" has already been completed.");
                 else
@@ -244,7 +253,26 @@ namespace TaskManager
                 Console.WriteLine("\nInvalid Task ID");
         }
 
-        public static void PrintTaskList(ListNavigator<Item> itemNavigator, bool onlyOutstanding)
+        public static void PrintIncompleteTasks(ListNavigator<Task> taskNavigator)
+        {
+            //Only show oustandings tasks if onlyOutstanding is true
+            taskNavigator.GoToFirstPage();
+            var temp_page = taskNavigator.GetCurrentPage();
+            bool empty = true;
+            foreach (var task in temp_page)
+                if (task.Value.IsCompleted == false)
+                {
+                    Console.WriteLine($"{task.Value}");
+                    empty = false;
+                }
+            if (empty)
+            {
+                Console.WriteLine("There are no outstanding tasks in the list.");
+                return;
+            }
+        }
+
+        public static void PrintItemList(ListNavigator<Item> itemNavigator)
         {
             itemNavigator.GoToFirstPage();
             bool isNavigating = true;
@@ -252,27 +280,8 @@ namespace TaskManager
             {
                 Console.WriteLine();
                 var page = itemNavigator.GetCurrentPage();
-
-                //Only show oustandings tasks if onlyOutstanding is true
-                if (onlyOutstanding)
-                {
-                    bool empty = true;
-                    foreach (var item in page)
-                        if (item.Value.IsCompleted == false)
-                        {
-                            Console.WriteLine($"{item.Value}");
-                            empty = false; 
-                        }
-                    if (empty)
-                    {
-                        Console.WriteLine("There are no outstanding tasks in the list.");
-                        return;
-                    }
-                }
-
-                else
-                    foreach (var item in page)
-                        Console.WriteLine($"{item.Value}");
+                foreach (var item in page)
+                    Console.WriteLine($"{item.Value}");
 
                 if (itemNavigator.HasPreviousPage)
                     Console.WriteLine("P. Previous");
