@@ -1,4 +1,6 @@
-﻿using Library.TaskAppointmentManager;
+﻿//print full page on outstanding tasks
+
+using Library.TaskAppointmentManager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -195,7 +197,7 @@ namespace TaskManager
                 Console.WriteLine("\nInvalid Task ID");
         }
 
-        public static void ListAllIncomplete(List<Task> taskList)
+       /* public static void ListAllIncomplete(List<Task> taskList)
         {
             bool empty = true;
             Console.WriteLine();
@@ -222,7 +224,7 @@ namespace TaskManager
             Console.WriteLine();
             foreach (var task in taskList)
                 Console.WriteLine(task.ToString());
-        }
+        }*/
 
         public static void PrintTaskList(ListNavigator<Task> taskNavigator, bool onlyOutstanding)
         {
@@ -233,7 +235,7 @@ namespace TaskManager
                 Console.WriteLine();
                 var page = taskNavigator.GetCurrentPage();
 
-                //If only oustandings tasks
+                //Only show oustandings tasks if onlyOutstanding is true
                 if (onlyOutstanding)
                 {
                     bool empty = true;
