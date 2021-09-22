@@ -2,18 +2,12 @@
 
 namespace Library.TaskAppointmentManager
 {
-    public class Task
+    public class Task : Item
     {
-        private static int currentId = 1;
-
-        public Task()
+        public Task() : base()
         {
-            Id = currentId++;
         }
 
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
         public DateTime Deadline { get; set; }
         public bool IsCompleted { get; set; }
         public override string ToString()
