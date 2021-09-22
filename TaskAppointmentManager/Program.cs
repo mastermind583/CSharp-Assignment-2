@@ -30,7 +30,7 @@ namespace TaskManager
                     {
                         case 1:
                             //add task
-                            AddTask(taskList);
+                            AddOrEditTask(taskList);
                             break;
                         case 2:
                             //delete task
@@ -38,7 +38,21 @@ namespace TaskManager
                             break;
                         case 3:
                             //edit task
-                            EditTask(taskList);
+                            Console.WriteLine("\nWhich task would you like to edit?");
+                            ListAll(taskList);
+                            Console.WriteLine();
+
+                            //only edit task if the task exists
+                            if (int.TryParse(Console.ReadLine(), out int editChoice))
+                            {
+                                var taskToEdit = taskList.FirstOrDefault(t => t.Id == editChoice);
+                                if (taskToEdit == null)
+                                    Console.WriteLine("\nID \"" + editChoice + "\" not found.");
+                                else
+                                    AddOrEditTask(taskList, taskToEdit);
+                            }
+                            else
+                                Console.WriteLine("Invalid selection!");
                             break;
                         case 4:
                             //complete task
@@ -69,6 +83,14 @@ namespace TaskManager
 
         public static void AddOrEditTask(List<Task> taskList, Task task = null)
         {
+            //check to see if there is anything in the list, and if the user is trying to edit
+            if (taskList.FirstOrDefault() == null && task == null)
+            {
+                Console.WriteLine("\nThere are no tasks to edit.");
+                return;
+            }
+
+            //check to see if the user is trying to create a new task
             bool isNewTask = false;
             if (task == null)
             {
@@ -98,28 +120,14 @@ namespace TaskManager
                 }
             }
             while (cont);
-            /*
-            if (ticket is SupportTicket)
-            {
-                Console.WriteLine("What is the deadline?");
-                if (DateTime.TryParse(Console.ReadLine(), out DateTime deadline))
-                {
-                    (ticket as SupportTicket).Deadline = deadline;
-                }
-                else
-                {
-                    Console.WriteLine("Invalid choice, defaulting to today");
-                    (ticket as SupportTicket).Deadline = DateTime.Today;
-                }
-            }
-            
-            ticket.DateAdded = DateTime.Now;*/
 
             if (isNewTask)
             {
                 taskList.Add(task);
-                Console.WriteLine("\nNEW TASK: \"" + newTask.Name + "\" has been added to the list.");
+                Console.WriteLine("\nNEW TASK: \"" + task.Name + "\" has been added to the list.");
             }
+            else
+                Console.WriteLine("\nTASK UPDATED: \"" + task.Name + "\".");
         }
 
         public static void DeleteTask(List<Task> taskList)
@@ -141,54 +149,6 @@ namespace TaskManager
                     Console.WriteLine("\nTASK DELETED: \"" + taskToDelete.Name + "\" has been removed from the list.");
                 else
                     Console.WriteLine("\nID \"" + deleteChoice + "\" not found.");
-            }
-            else
-                Console.WriteLine("\nInvalid Task ID");
-        }
-
-        public static void EditTask(List<Task> taskList)
-        {
-            if (taskList.FirstOrDefault() == null)
-            {
-                Console.WriteLine("\nThere are no tasks to edit.");
-                return;
-            }
-
-            Console.WriteLine("\nWhich task would you like to edit?");
-            ListAll(taskList);
-            Console.WriteLine();
-
-            if (int.TryParse(Console.ReadLine(), out int editChoice))
-            {
-                var taskToEdit = taskList.FirstOrDefault(t => t.Id == editChoice);
-                if (taskList.Contains(taskToEdit))
-                {
-                    Console.WriteLine("\nEnter the new name of the task: ");
-                    taskToEdit.Name = Console.ReadLine();
-
-                    Console.WriteLine("\nEnter the new description of the task: ");
-                    taskToEdit.Description = Console.ReadLine();
-
-                    bool cont;
-                    do
-                    {
-                        Console.WriteLine("\nEnter the deadline for the task: ");
-                        if (DateTime.TryParse(Console.ReadLine(), out DateTime date))
-                        {
-                            taskToEdit.Deadline = date;
-                            cont = false;
-                            Console.WriteLine("\nTASK UPDATED: \"" + taskToEdit.Name + "\".");
-                        }
-                        else
-                        {
-                            Console.WriteLine("\nInvalid date. Try again.");
-                            cont = true;
-                        }
-                    }
-                    while (cont);
-                }
-                else
-                    Console.WriteLine("\nID \"" + editChoice + "\" not found.");
             }
             else
                 Console.WriteLine("\nInvalid Task ID");
