@@ -44,7 +44,9 @@ namespace TaskManager
                                 {
                                     case 1:
                                         //add task
+                                        AddOrEditItem(itemList, itemtype)
                                         break;
+                                        w
                                     case 2:
                                         //add appointment
                                         break;
@@ -119,7 +121,7 @@ namespace TaskManager
             Console.WriteLine("\nThank you for using the Task Manager!\n");
         }
 
-        public static void AddOrEditItem(List<Item> itemList, Item item = null)
+        public static void AddOrEditItem(List<Item> itemList, int itemtype, Item item = null, )
         {
             //check to see if the user is trying to create a new task
             bool isNewTask = false;
