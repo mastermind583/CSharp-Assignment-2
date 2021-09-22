@@ -13,8 +13,7 @@ namespace TaskManager
         static void Main(string[] args)
         {
             var itemList = new List<Item>();
-            var itemNavigator = new ListNavigator<Item>(itemList, 2);
-
+            var itemNavigator = new ListNavigator<Item>(itemList, 2);       
             Console.WriteLine("Welcome to the Task Manager!");
 
             bool cont = true;
@@ -44,9 +43,8 @@ namespace TaskManager
                                 {
                                     case 1:
                                         //add task
-                                        AddOrEditItem(itemList, itemtype)
+                                        AddOrEditItem(itemList, itemtype);
                                         break;
-                                        w
                                     case 2:
                                         //add appointment
                                         break;
