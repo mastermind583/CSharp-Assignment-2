@@ -1,4 +1,5 @@
-﻿//print full page on outstanding tasks
+﻿//how to print full page on outstanding tasks, modify listnavigator class?
+//can appointments be completed?
 
 using Library.TaskAppointmentManager;
 using System;
