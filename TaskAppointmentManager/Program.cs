@@ -12,8 +12,8 @@ namespace TaskManager
     {
         static void Main(string[] args)
         {
-            var taskList = new List<Task>();
-            var taskNavigator = new ListNavigator<Task>(taskList, 2);
+            var itemList = new List<Item>();
+            var itemNavigator = new ListNavigator<Item>(itemList, 2);
 
             Console.WriteLine("Welcome to the Task Manager!");
 
@@ -35,22 +35,40 @@ namespace TaskManager
                     {
                         case 1:
                             //add task
-                            AddOrEditTask(taskList);
+                            Console.WriteLine("Would you like to add a task or an appointment?");
+                            Console.WriteLine("1. Task");
+                            Console.WriteLine("2. Appointment");
+                            if (int.TryParse(Console.ReadLine(), out int itemtype))
+                            {
+                                switch(itemtype)
+                                {
+                                    case 1:
+                                        //add task
+                                        break;
+                                    case 2:
+                                        //add appointment
+                                        break;
+                                    default:
+                                        Console.WriteLine("Invalid selection!");
+                                        break;
+                                }
+                            }
+                            AddOrEditTask(itemList);
                             break;
                         case 2:
                             //delete task
-                            DeleteTask(taskList, taskNavigator);
+                            DeleteTask(itemList, itemNavigator);
                             break;
                         case 3:
                             //edit task
                             //check to see if there is anything in the list
-                            if (taskList.FirstOrDefault() == null)
+                            if (itemList.FirstOrDefault() == null)
                                 Console.WriteLine("\nThere are no tasks to edit.");
                             else
                             {
                                 Console.WriteLine("\nEDITING A TASK");
                                 Console.WriteLine("--------------");
-                                PrintTaskList(taskNavigator, false);
+                                PrintTaskList(itemNavigator, false);
                                 Console.WriteLine("\nWhich task would you like to edit?");
 
                                 //only edit a task if the task exists
@@ -101,7 +119,7 @@ namespace TaskManager
             Console.WriteLine("\nThank you for using the Task Manager!\n");
         }
 
-        public static void AddOrEditTask(List<Task> taskList, Task task = null)
+        public static void AddOrEditItem(List<Item> itemList, Item item = null)
         {
             //check to see if the user is trying to create a new task
             bool isNewTask = false;
@@ -244,7 +262,7 @@ namespace TaskManager
                         if (item.Value.IsCompleted == false)
                         {
                             Console.WriteLine($"{item.Value}");
-                            empty = false;
+                            empty = false; 
                         }
                     if (empty)
                     {
