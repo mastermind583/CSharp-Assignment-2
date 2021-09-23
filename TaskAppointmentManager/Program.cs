@@ -18,7 +18,8 @@ namespace TaskManager
             //give the user the choice to load a new file or make a new one
             Console.WriteLine("Do you want to load your list? (Y or N)");
 
-             var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            //get the path to the roaming folder
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
             if (Console.ReadLine().Equals("Y", StringComparison.InvariantCultureIgnoreCase))
             {
