@@ -16,18 +16,37 @@ namespace TaskManager
         {
             //Initialize the Item List
             List<Item> itemList = null;
-            if (File.Exists("SaveData.json"))
+            JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            Console.WriteLine("Do you want to load your list? (Y or N)");
+
+            //To save to the roaming folder, I would define the path variable and use it when I deserialize:
+            // var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            //I'm not sure if it is required to that or not, I just wanted to save the json file next to the exe
+
+            if (Console.ReadLine().Equals("Y", StringComparison.InvariantCultureIgnoreCase))
             {
                 //deserialize the list
-                itemList = JsonConvert.DeserializeObject<List<Item>>(File.ReadAllText("SaveData.json"));
+                if (File.Exists("SaveData.json"))
+                {
+                    itemList = JsonConvert.DeserializeObject<List<Item>>(File.ReadAllText("SaveData.json"), settings);
+                    Console.WriteLine("\nList successfully loaded.");
+                }
+                else
+                {
+                    itemList = new List<Item>();
+                    Console.WriteLine("\nNo save file found. Making a new list.");
+                }
             }
             else
+            {
                 itemList = new List<Item>();
+                Console.WriteLine("\nMaking a new list.");
+            }
 
             //Initialize the Item List and List Navigator
             var itemNavigator = new ListNavigator<Item>(itemList, 2);
 
-            Console.WriteLine("Welcome to the Task Manager!");
+            Console.WriteLine("\nWelcome to the Task Manager!");
 
             bool cont = true;
             while (cont)
@@ -152,6 +171,12 @@ namespace TaskManager
                         case 8:
                             //exit
                             cont = false;
+                            Console.WriteLine("\nDo you want to save your list? (Y or N)");
+                            if (Console.ReadLine().Equals("Y", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                File.WriteAllText("SaveData.json", JsonConvert.SerializeObject(itemList, settings));
+                                Console.WriteLine("\nSuccessfully saved the list!");
+                            }
                             break;
                         default:
                             Console.WriteLine("\nInvalid option. Try Again!");
