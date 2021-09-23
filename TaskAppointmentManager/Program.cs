@@ -1,7 +1,4 @@
-﻿//how to print full page on outstanding tasks, modify listnavigator class?
-//can appointments be completed?
-
-using Library.TaskAppointmentManager;
+﻿using Library.TaskAppointmentManager;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
