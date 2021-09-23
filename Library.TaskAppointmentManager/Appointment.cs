@@ -7,6 +7,7 @@ namespace Library.TaskAppointmentManager
     {
         public Appointment() : base()
         {
+            Attendees = new List<string>();
         }
 
         public DateTime Start { get; set; }
@@ -16,9 +17,16 @@ namespace Library.TaskAppointmentManager
         
         public override string ToString()
         {
+            string attendees = null;
+            for (int i = 0; i < Attendees.Count; i++)
+            {
+                attendees += Attendees[i];
+                if (i != Attendees.Count - 1)
+                    attendees += ", ";
+            }
             return $"ID: {Id} - TYPE: Appointment - NAME: {Name} - " +
                 $"DESCRIPTION: {Description} - START DATE: {Start} - " +
-                $"END DATE: {End} - ATTENDEES: {Attendees}";
+                $"END DATE: {End} - ATTENDEES: {attendees}";
         }
     }
 }
