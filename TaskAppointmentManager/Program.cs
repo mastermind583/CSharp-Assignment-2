@@ -2,8 +2,10 @@
 //can appointments be completed?
 
 using Library.TaskAppointmentManager;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace TaskManager
@@ -12,8 +14,17 @@ namespace TaskManager
     {
         static void Main(string[] args)
         {
+            //Initialize the Item List
+            List<Item> itemList = null;
+            if (File.Exists("SaveData.json"))
+            {
+                //deserialize the list
+                itemList = JsonConvert.DeserializeObject<List<Item>>(File.ReadAllText("SaveData.json"));
+            }
+            else
+                itemList = new List<Item>();
+
             //Initialize the Item List and List Navigator
-            var itemList = new List<Item>();
             var itemNavigator = new ListNavigator<Item>(itemList, 2);
 
             Console.WriteLine("Welcome to the Task Manager!");
@@ -126,15 +137,17 @@ namespace TaskManager
                             Console.WriteLine("\nEnter a string to search for in the list");
                             string str = Console.ReadLine();
 
-                            var searchList =
-                                from items in itemList
-                                where items.Name.Contains(str) == true ||
-                                      items.Description.Contains(str) == true ||
-                                     (items is Appointment)? (items as Appointment).Attendees.Contains(str) == true : false
-                                select items;
+                            //search for entries that contain the inputted string
+                            var searchList = itemList.Where(i => 
+                                i.Name.Contains(str) || i.Description.Contains(str) ||  
+                                i is Appointment && (i as Appointment).Attendees.Contains(str));
 
-                            foreach (var item in searchList)
-                                Console.WriteLine(item);
+                            //print the entries that match the search
+                            if (searchList.FirstOrDefault() == null)
+                                Console.WriteLine("\nThere are no items that match your search");
+                            else
+                                foreach (var item in searchList)
+                                    Console.WriteLine(item);
                             break;
                         case 8:
                             //exit
