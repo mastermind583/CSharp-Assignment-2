@@ -44,7 +44,7 @@ namespace TaskManager
             }
 
             //Initialize the Item List and List Navigator
-            var itemNavigator = new ListNavigator<Item>(itemList, 2);
+            var itemNavigator = new ListNavigator<Item>(itemList, 5);
 
             Console.WriteLine("\nWelcome to the Task Manager!");
 
@@ -124,10 +124,11 @@ namespace TaskManager
                             break;
                         case 4:
                             //complete task
-                            if (itemList.FirstOrDefault() == null)
+                            //check if any oustanding tasks are in the list
+                            if (itemList.FirstOrDefault(t => (t is Task) && (t as Task).IsCompleted == false) == null)
                             {
-                                Console.WriteLine("\nThere are no tasks to complete.");
-                                return;
+                                Console.WriteLine("\nThere are no outstanding tasks to complete.");
+                                break;
                             }
 
                             Console.WriteLine("\nCOMPLETING A TASK");
@@ -211,6 +212,7 @@ namespace TaskManager
             //Enter task specific information
             if (item is Task)
             {
+                //deadline
                 Console.WriteLine("\nEnter the deadline for the task: ");
                 if (DateTime.TryParse(Console.ReadLine(), out DateTime date))
                     (item as Task).Deadline = date;
@@ -224,6 +226,7 @@ namespace TaskManager
             //Enter appointment specific information
             else
             {
+                //start date
                 Console.WriteLine("\nEnter the start date for the appointment: ");
                 if (DateTime.TryParse(Console.ReadLine(), out DateTime startdate))
                     (item as Appointment).Start = startdate;
@@ -233,6 +236,7 @@ namespace TaskManager
                     (item as Appointment).Start = DateTime.Today;
                 }
 
+                //end date
                 Console.WriteLine("\nEnter the end date for the appointment: ");
                 if (DateTime.TryParse(Console.ReadLine(), out DateTime enddate))
                     (item as Appointment).End = enddate;
@@ -242,7 +246,7 @@ namespace TaskManager
                     (item as Appointment).End = DateTime.Today;
                 }
 
-                //enter attendees
+                //attendees
                 Console.WriteLine("\nEnter the number of attendees:");
                 if (int.TryParse(Console.ReadLine(), out int choice))
                 {
@@ -259,6 +263,7 @@ namespace TaskManager
                 }
             }
 
+            //checks if the item needs to be added or if it was edited
             if (isNewItem)
             {
                 itemList.Add(item);
@@ -319,23 +324,15 @@ namespace TaskManager
         public static void PrintIncompleteTasks(List<Item> taskList)
         {
             //Initialize the Outstanding Task List and Outstanding Task Navigator
+            // these are temporary objects that are created every time this function is called
             var outstandingTaskList = new List<Task>();
-            var outstandingTaskNavigator = new ListNavigator<Task>(outstandingTaskList, 2);
+            var outstandingTaskNavigator = new ListNavigator<Task>(outstandingTaskList, 5);
 
-            bool empty = true;
+            //add only outstanding tasks to the list, making the navigator also only show
+            // outstanding tasks
             foreach (var task in taskList)
-            {
                 if (task is Task && (task as Task).IsCompleted == false)
-                {
                     outstandingTaskList.Add(task as Task);
-                    empty = false;
-                }
-            }
-            if (empty)
-            {
-                Console.WriteLine("\nThere are no outstanding tasks in the list.");
-                return;
-            }
 
             bool isNavigating = true;
             while (isNavigating)
@@ -352,6 +349,7 @@ namespace TaskManager
                 if (outstandingTaskNavigator.HasNextPage)
                     Console.WriteLine("N. Next");
 
+                //if there is only one page, don't let the user try to navigate
                 if (outstandingTaskNavigator.HasPreviousPage == false && outstandingTaskNavigator.HasNextPage == false)
                 {
                     isNavigating = false;
@@ -368,8 +366,10 @@ namespace TaskManager
             }
         }
 
+        //Just like the incomplete task print function, but it uses the permanent list of items
+        // instead of a temporary list
         public static void PrintItemList(ListNavigator<Item> itemNavigator)
-        {
+        {            
             itemNavigator.GoToFirstPage();
             bool isNavigating = true;
             while (isNavigating)
