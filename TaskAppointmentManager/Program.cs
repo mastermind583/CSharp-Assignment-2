@@ -18,14 +18,12 @@ namespace TaskManager
             //give the user the choice to load a new file or make a new one
             Console.WriteLine("Do you want to load your list? (Y or N)");
 
-            //To save to the roaming folder, I would define the path variable and use it when I deserialize:
-            // var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            //I'm not sure if it is required to that or not, I just wanted to save the json file next to the exe
+             var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
             if (Console.ReadLine().Equals("Y", StringComparison.InvariantCultureIgnoreCase))
             {
                 //deserialize the list
-                if (File.Exists("SaveData.json"))
+                if (File.Exists($"{path}\\SaveData.json"))
                 {
                     itemList = JsonConvert.DeserializeObject<List<Item>>(File.ReadAllText("SaveData.json"), settings);
                     Console.WriteLine("\nList successfully loaded.");
@@ -179,7 +177,7 @@ namespace TaskManager
                             Console.WriteLine("\nDo you want to save your list? (Y or N)");
                             if (Console.ReadLine().Equals("Y", StringComparison.InvariantCultureIgnoreCase))
                             {
-                                File.WriteAllText("SaveData.json", JsonConvert.SerializeObject(itemList, settings));
+                                File.WriteAllText($"{path}\\SaveData.json", JsonConvert.SerializeObject(itemList, settings));
                                 Console.WriteLine("\nSuccessfully saved the list!");
                             }
                             break;
