@@ -17,6 +17,8 @@ namespace TaskManager
             //Initialize the Item List
             List<Item> itemList = null;
             JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+
+            //give the user the choice to load a new file or make a new one
             Console.WriteLine("Do you want to load your list? (Y or N)");
 
             //To save to the roaming folder, I would define the path variable and use it when I deserialize:
@@ -31,6 +33,7 @@ namespace TaskManager
                     itemList = JsonConvert.DeserializeObject<List<Item>>(File.ReadAllText("SaveData.json"), settings);
                     Console.WriteLine("\nList successfully loaded.");
                 }
+                //if the save file doesn't exist just make a new list
                 else
                 {
                     itemList = new List<Item>();
@@ -127,7 +130,7 @@ namespace TaskManager
                             //check if any oustanding tasks are in the list
                             if (itemList.FirstOrDefault(t => (t is Task) && (t as Task).IsCompleted == false) == null)
                             {
-                                Console.WriteLine("\nThere are no outstanding tasks to complete.");
+                                Console.WriteLine("\nThere are no outstanding tasks in the list.");
                                 break;
                             }
 
@@ -142,7 +145,11 @@ namespace TaskManager
                             break;
                         case 5:
                             //list incomplete tasks
-                            PrintIncompleteTasks(itemList);
+                            //check if any oustanding tasks are in the list
+                            if (itemList.FirstOrDefault(t => (t is Task) && (t as Task).IsCompleted == false) == null)
+                                Console.WriteLine("\nThere are no outstanding tasks in the list.");
+                            else
+                                PrintIncompleteTasks(itemList);
                             break;
                         case 6:
                             //list all tasks
@@ -247,6 +254,7 @@ namespace TaskManager
                 }
 
                 //attendees
+                //This runs a for loop that takes in the names of however many people the user specifies
                 Console.WriteLine("\nEnter the number of attendees:");
                 if (int.TryParse(Console.ReadLine(), out int choice))
                 {
@@ -287,7 +295,7 @@ namespace TaskManager
             PrintItemList(itemNavigator);
             Console.WriteLine("\nWhich task would you like to delete?");
 
-            //Remove the item, and remove from the outstanding task list if it is a task
+            //Remove the item
             if (int.TryParse(Console.ReadLine(), out int deleteChoice))
             {
                 var itemToDelete = itemList.FirstOrDefault(t => t.Id == deleteChoice);
@@ -302,8 +310,8 @@ namespace TaskManager
 
         public static void CompleteTask(List<Item> itemList)
         {
-            //complete a task if the item is an incomplete task in the list, remove it from the outstanding task list
-            // otherwise, there are checks for if it is an appointment and if the task has already been completed
+            //complete a task if the item is an incomplete task in the list
+            // otherwise, there are checks for if the item is an appointment and if the task has already been completed
             if (int.TryParse(Console.ReadLine(), out int completeChoice))
             {             
                 var taskToComplete = itemList.FirstOrDefault(t => t.Id == completeChoice);
